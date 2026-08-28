@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
 
 st.set_page_config(
     page_title="E-Commerce Sales & Customer Insights",
@@ -13,11 +16,13 @@ st.caption("E-Commerce Analytics | 2021–2025")
 
 @st.cache_data
 def load_data():
-    customers = pd.read_csv("cleaned_customers.csv")
-    orders = pd.read_csv("cleaned_orders.csv")
-    items = pd.read_csv("cleaned_order_items.csv")
-    reviews = pd.read_csv("cleaned_order_reviews.csv")
-    products = pd.read_csv("cleaned_products.csv")
+    customers = pd.read_csv(BASE_DIR / "cleaned_customers.csv")
+    orders = pd.read_csv(BASE_DIR / "cleaned_orders.csv")
+    items = pd.read_csv(BASE_DIR / "cleaned_order_items.csv")
+    reviews = pd.read_csv(BASE_DIR / "cleaned_order_reviews.csv")
+    products = pd.read_csv(BASE_DIR / "cleaned_products.csv")
+
+    # Keep your existing sales calculation here
 
     orders["order_purchase_timestamp"] = pd.to_datetime(
         orders["order_purchase_timestamp"], errors="coerce"
