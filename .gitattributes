@@ -1,1 +1,4 @@
 phase4-excel/Analysed_order_items.xlsx filter=lfs diff=lfs merge=lfs -text
+*.pbix filter=lfs diff=lfs merge=lfs -text
+*.csv filter=lfs diff=lfs merge=lfs -text
+*.docx filter=lfs diff=lfs merge=lfs -text

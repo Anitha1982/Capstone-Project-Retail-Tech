@@ -1,1 +1,0 @@
-from ecommerce_streamlit_app.api import app
