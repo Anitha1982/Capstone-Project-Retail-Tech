@@ -3,5 +3,5 @@ pandas
 plotly
 openpyxl
 fastapi
-uvicorn
+uvicorn[standard]
 google-genai
