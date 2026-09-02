@@ -2,3 +2,6 @@ streamlit
 pandas
 plotly
 openpyxl
+fastapi
+uvicorn
+google-genai
