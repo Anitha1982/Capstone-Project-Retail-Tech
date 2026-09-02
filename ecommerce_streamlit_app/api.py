@@ -1,12 +1,14 @@
+from pathlib import Path
+import os
+
+import pandas as pd
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-import pandas as pd
-import os
 from google import genai
-from pathlib import Path
+
 
 # --------------------------------------------------
-# FastAPI
+# App
 # --------------------------------------------------
 
 app = FastAPI(title="E-Commerce AI Chatbot API")
@@ -19,22 +21,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # --------------------------------------------------
-# Gemini
+# Paths
+# --------------------------------------------------
+
+BASE_DIR = Path(__file__).resolve().parent
+
+
+# --------------------------------------------------
+# Gemini client
 # --------------------------------------------------
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-if not GEMINI_API_KEY:
-    raise RuntimeError("GEMINI_API_KEY is not set.")
+client = None
 
-client = genai.Client(api_key=GEMINI_API_KEY)
+if GEMINI_API_KEY:
+    client = genai.Client(api_key=GEMINI_API_KEY)
+
 
 # --------------------------------------------------
-# Load cleaned datasets
+# Load data
 # --------------------------------------------------
-
-BASE_DIR = Path(__file__).resolve().parent
 
 orders = pd.read_csv(BASE_DIR / "cleaned_orders.csv")
 order_items = pd.read_csv(BASE_DIR / "cleaned_order_items.csv")
@@ -42,8 +51,9 @@ products = pd.read_csv(BASE_DIR / "cleaned_products.csv")
 customers = pd.read_csv(BASE_DIR / "cleaned_customers.csv")
 reviews = pd.read_csv(BASE_DIR / "cleaned_order_reviews.csv")
 
+
 # --------------------------------------------------
-# Calculate basic metrics
+# Metrics
 # --------------------------------------------------
 
 total_orders = orders["order_id"].nunique()
@@ -56,6 +66,7 @@ revenue = (
 
 average_review = reviews["review_score"].mean()
 
+
 # --------------------------------------------------
 # Home
 # --------------------------------------------------
@@ -67,16 +78,18 @@ def home():
         "message": "E-Commerce AI Chatbot API is running"
     }
 
+
 # --------------------------------------------------
-# Health check
+# Health
 # --------------------------------------------------
 
 @app.get("/health")
 def health():
     return {
         "status": "healthy",
-        "gemini_configured": True
+        "gemini_configured": client is not None
     }
+
 
 # --------------------------------------------------
 # Chat
@@ -86,12 +99,15 @@ def health():
 async def chat(request: Request):
 
     try:
-        # Read request from Power BI / browser
+        if client is None:
+            return {
+                "answer": "Gemini API key is not configured on the server."
+            }
+
         body = await request.json()
 
-        print("REQUEST FROM CLIENT:", body)
+        print("REQUEST:", body)
 
-        # Try common chatbot field names
         user_message = (
             body.get("message")
             or body.get("query")
@@ -100,72 +116,54 @@ async def chat(request: Request):
             or ""
         )
 
-        # Handle messages array
         if not user_message and isinstance(body.get("messages"), list):
-
-            for msg in reversed(body["messages"]):
-
-                if isinstance(msg, dict):
-
-                    content = msg.get("content")
-
+            for item in reversed(body["messages"]):
+                if isinstance(item, dict):
+                    content = item.get("content")
                     if isinstance(content, str):
                         user_message = content
                         break
 
         if not user_message:
-
             return {
                 "answer": "Please enter a question."
             }
 
-        # --------------------------------------------------
-        # Prompt for Gemini
-        # --------------------------------------------------
-
         prompt = f"""
 You are an AI assistant for an e-commerce analytics dashboard.
 
-Use the following business information to answer the user's question.
+Business metrics:
 
 Total Orders: {total_orders}
-
 Total Revenue: {revenue:.2f}
-
 Average Review Score: {average_review:.2f}
 
-Available datasets:
+Available tables:
 
-Orders columns:
+Orders:
 {list(orders.columns)}
 
-Order Items columns:
+Order Items:
 {list(order_items.columns)}
 
-Products columns:
+Products:
 {list(products.columns)}
 
-Customers columns:
+Customers:
 {list(customers.columns)}
 
-Reviews columns:
+Reviews:
 {list(reviews.columns)}
-
-Rules:
-
-1. Answer clearly and briefly.
-2. Use the available e-commerce information.
-3. Do not invent numerical values.
-4. If the requested information is not available, say so.
-5. Give a business-focused explanation when appropriate.
 
 User question:
 {user_message}
-"""
 
-        # --------------------------------------------------
-        # Gemini request
-        # --------------------------------------------------
+Rules:
+- Answer clearly and briefly.
+- Do not invent numerical values.
+- Use the available e-commerce information.
+- If the requested information is unavailable, say so.
+"""
 
         response = client.models.generate_content(
             model="gemini-3.6-flash",
@@ -174,11 +172,7 @@ User question:
 
         answer = response.text
 
-        print("GEMINI ANSWER:", answer)
-
-        # --------------------------------------------------
-        # Return multiple common response fields
-        # --------------------------------------------------
+        print("ANSWER:", answer)
 
         return {
             "answer": answer,
