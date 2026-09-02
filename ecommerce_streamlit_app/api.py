@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import os
 from google import genai
+from pathlib import Path
 
 # --------------------------------------------------
 # FastAPI
@@ -33,11 +34,13 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 # Load cleaned datasets
 # --------------------------------------------------
 
-orders = pd.read_csv("cleaned_orders.csv")
-order_items = pd.read_csv("cleaned_order_items.csv")
-products = pd.read_csv("cleaned_products.csv")
-customers = pd.read_csv("cleaned_customers.csv")
-reviews = pd.read_csv("cleaned_order_reviews.csv")
+BASE_DIR = Path(__file__).resolve().parent
+
+orders = pd.read_csv(BASE_DIR / "cleaned_orders.csv")
+order_items = pd.read_csv(BASE_DIR / "cleaned_order_items.csv")
+products = pd.read_csv(BASE_DIR / "cleaned_products.csv")
+customers = pd.read_csv(BASE_DIR / "cleaned_customers.csv")
+reviews = pd.read_csv(BASE_DIR / "cleaned_order_reviews.csv")
 
 # --------------------------------------------------
 # Calculate basic metrics
