@@ -1,7 +1,4 @@
-streamlit
-pandas
-plotly
-openpyxl
 fastapi
 uvicorn[standard]
+pandas
 google-genai
