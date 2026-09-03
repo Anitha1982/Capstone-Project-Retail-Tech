@@ -398,6 +398,26 @@ def health():
         "gemini_configured": client is not None
     }
 
+@app.post("/")
+async def powerbi_chat_root(request: Request):
+
+    try:
+        body = await request.json()
+
+        print("POWER BI ROOT REQUEST:")
+        print(body)
+
+        return {
+            "answer": "Backend reached successfully. Root POST received."
+        }
+
+    except Exception as e:
+
+        print("ROOT ERROR:", repr(e))
+
+        return {
+            "answer": "Root endpoint received the request."
+        }
 
 # ============================================================
 # CHAT
@@ -414,6 +434,8 @@ async def chat(request: Request):
             }
 
         body = await request.json()
+        print("POWER BI CHAT REQUEST:")
+        print(body)
 
         print("REQUEST:", body)
 
