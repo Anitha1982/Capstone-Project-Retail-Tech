@@ -113,6 +113,7 @@ page = st.sidebar.radio(
         "⚙️ Phase 7 — Feature Engineering",
         "📐 Phase 8 — Statistical Validation",
         "🤖 Phase 9 — Machine Learning",
+        "📈 Power BI Dashboard",
         "💡 Insights & Recommendations",
         "🤖 AI Business Assistant",
     ]
