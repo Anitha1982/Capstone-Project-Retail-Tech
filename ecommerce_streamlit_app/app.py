@@ -113,7 +113,6 @@ page = st.sidebar.radio(
         "⚙️ Phase 7 — Feature Engineering",
         "📐 Phase 8 — Statistical Validation",
         "🤖 Phase 9 — Machine Learning",
-        "📈 Power BI Dashboard",
         "💡 Insights & Recommendations",
         "🤖 AI Business Assistant",
     ]
@@ -122,16 +121,18 @@ page = st.sidebar.radio(
 st.sidebar.divider()
 st.sidebar.header("🔎 Filters")
 
-# Power BI Dashboard Link
-powerbi_url = "https://guruface-my.sharepoint.com/:u:/p/anitha_saraswathy/IQCPzC64X9XCSrWjfZMGZsBqAXHc_Vb6Uzsx7a9c6QTv2wY?e=EIjO9M"
-
 st.subheader("📊 Power BI Dashboard")
 
-st.link_button(
-    "📊 Open Power BI Dashboard",
-    powerbi_url,
-    type="primary",
-    width="stretch"
+powerbi_embed_url = (
+    "https://app.powerbi.com/reportEmbed"
+    "?reportId=d5c73dfa-c92d-4de8-a129-6119740ebae4"
+    "&autoAuth=true"
+)
+
+components.iframe(
+    powerbi_embed_url,
+    height=700,
+    scrolling=True
 )
 
 def options(col):
@@ -261,7 +262,7 @@ elif page == "📋 Phase 3 — Business Questions":
         ]
     })
     st.subheader("Hypothesis Framework")
-    st.dataframe(hdf, use_container_width=True, hide_index=True)
+    st.dataframe(hdf, width="stretch", hide_index=True)
 
 # -----------------------------
 # Phase 4
@@ -385,7 +386,7 @@ ORDER BY revenue DESC;"""
                          .sort_values("revenue", ascending=False)
 
     st.subheader("Query Result")
-    st.dataframe(result, use_container_width=True, hide_index=True)
+    st.dataframe(result, width="stretch", hide_index=True)
 
     st.subheader("SQL Techniques Demonstrated")
     for x in ["JOINs", "GROUP BY", "Aggregate functions", "ORDER BY",
@@ -420,7 +421,7 @@ elif page == "⚙️ Phase 7 — Feature Engineering":
             "Time analysis"
         ]
     })
-    st.dataframe(feature_df, use_container_width=True, hide_index=True)
+    st.dataframe(feature_df, width="stretch", hide_index=True)
 
     cols = [c for c in [
         "order_id", "product_id", "quantity", "unit_price",
@@ -429,7 +430,7 @@ elif page == "⚙️ Phase 7 — Feature Engineering":
     ] if c in filtered.columns]
 
     st.subheader("Engineered Feature Preview")
-    st.dataframe(filtered[cols].head(30), use_container_width=True, hide_index=True)
+    st.dataframe(filtered[cols].head(30), width="stretch", hide_index=True)
 
     feature = st.selectbox("Distribution", ["revenue", "unit_price", "quantity", "discount(%)"])
     fig = px.histogram(filtered, x=feature, nbins=40, title=f"Distribution of {feature}")
@@ -473,7 +474,7 @@ elif page == "📐 Phase 8 — Statistical Validation":
     display_stats["P_Value"] = display_stats["P_Value"].apply(
         lambda x: "< 0.001" if x == 0 else f"{x:.6f}"
     )
-    st.dataframe(display_stats, use_container_width=True, hide_index=True)
+    st.dataframe(display_stats, width="stretch", hide_index=True)
 
     c1, c2, c3 = st.columns(3)
     c1.metric("Significant", "3 / 6")
@@ -517,7 +518,7 @@ elif page == "🤖 Phase 9 — Machine Learning":
             "Train RMSE": "{:,.2f}", "Validation RMSE": "{:,.2f}", "Test RMSE": "{:,.2f}",
             "Train MAE": "{:,.2f}", "Validation MAE": "{:,.2f}", "Test MAE": "{:,.2f}"
         }),
-        use_container_width=True, hide_index=True
+       width="stretch", hide_index=True
     )
 
     best_idx = ml_results["Test RMSE"].idxmin()
