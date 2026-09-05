@@ -113,7 +113,6 @@ page = st.sidebar.radio(
         "⚙️ Phase 7 — Feature Engineering",
         "📐 Phase 8 — Statistical Validation",
         "🤖 Phase 9 — Machine Learning",
-        "📈 Power BI Dashboard",
         "💡 Insights & Recommendations",
         "🤖 AI Business Assistant",
     ]
@@ -121,6 +120,18 @@ page = st.sidebar.radio(
 
 st.sidebar.divider()
 st.sidebar.header("🔎 Filters")
+
+# Power BI Dashboard Link
+powerbi_url = "https://guruface-my.sharepoint.com/:u:/p/anitha_saraswathy/IQCPzC64X9XCSrWjfZMGZsBqAXHc_Vb6Uzsx7a9c6QTv2wY?e=EIjO9M"
+
+st.subheader("📊 Power BI Dashboard")
+
+st.link_button(
+    "📊 Open Power BI Dashboard",
+    powerbi_url,
+    type="primary",
+    width="stretch"
+)
 
 def options(col):
     return sorted(sales[col].dropna().unique().tolist())
